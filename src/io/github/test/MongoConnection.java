@@ -9,7 +9,7 @@ import io.github.sqlconnection.BaseConnection;
 public class MongoConnection {
 	
 	/**
-	 * Main method containing review analysis algorithm
+	 * Main method containing TF-IDF algorithm
 	 */
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{		
 		BaseConnection bc = new BaseConnection();
@@ -46,25 +46,5 @@ public class MongoConnection {
 		Review r_star = R.get(rand2);
 		
 		bc.close();
-	}
-	
-	/**
-	 * Method to create the json file containing categorized reviews
-	 */
-	public static void writeFile(ArrayList<Review> reviews) throws FileNotFoundException, UnsupportedEncodingException {
-		Writer writer = null;
-		try {
-		    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("reviews.json"), "utf-8"));
-		    for(Review review : reviews){
-				writer.write(review.toString() + "\n");
-			}
-		}
-		catch (IOException ex) {}
-		finally {
-		   try {
-			   writer.close();
-		   } 
-		   catch (Exception ex) {}
-		}
 	}
 }
