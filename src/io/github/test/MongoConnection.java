@@ -22,6 +22,29 @@ public class MongoConnection {
 		//Reviews arraylist
 		ArrayList<Review> reviews = new ArrayList<Review>();
 		
+		//Iterate through each entry unlabel review
+		while(no_split.hasNext()){
+			DBObject no_split_dbo = no_split.next();
+			Review review = new Review((String) no_split_dbo.get("id"), (String) no_split_dbo.get("review"));
+			reviews.add(review); //add review to reviews list
+		}
+		
+		//Forming R, a list of 6 random reviews
+		ArrayList<Review> R = new ArrayList<Review>();
+		int count = 0;
+		while (count < 6) {
+			int rand = (int)(Math.random() * 500);
+			Review rand_review = reviews.get(rand);
+			if (!R.contains(rand_review)) {
+				R.add(rand_review);
+				count++;
+			}
+		}
+		
+		//Picking r* from R
+		int rand2 = (int)(Math.random() * 6);
+		Review r_star = R.get(rand2);
+		
 		bc.close();
 	}
 	
