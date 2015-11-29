@@ -2,7 +2,6 @@ package io.github.test;
 
 import com.mongodb.*;
 import java.util.*;
-import java.io.*;
 
 import io.github.sqlconnection.BaseConnection;
 
@@ -11,7 +10,7 @@ public class MongoConnection {
 	/**
 	 * Main method containing TF-IDF algorithm
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{		
+	public static void main(String[] args) {		
 		BaseConnection bc = new BaseConnection();
 		bc.connect();
 		
@@ -44,6 +43,13 @@ public class MongoConnection {
 		//Picking r* from R
 		int rand2 = (int)(Math.random() * 6);
 		Review r_star = R.get(rand2);
+		
+		//TF-IDF
+		String review_text = r_star.getReview().toLowerCase();
+		String[] split_review = review_text.split("\\W+");
+		for (int i = 0; i < split_review.length; i++) {
+			System.out.println(split_review[i]);
+		}
 		
 		bc.close();
 	}
