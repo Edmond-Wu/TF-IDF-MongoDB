@@ -32,6 +32,23 @@ public class Review {
 		return tfidf;
 	}
 	
+	public void updateTF() {
+		String[] review_text = review.toLowerCase().split("\\W+");
+		for (int i = 0; i < review_text.length; i++) {
+			if (!tf.containsKey(review_text[i])) {
+				tf.put(review_text[i], 1.0);
+			}
+			else {
+				tf.put(review_text[i], 1.0 + tf.get(review_text[i]));
+			}
+		}
+		
+		//Updating TF's with log10-weighted values
+		for (String word : tf.keySet()) {
+			tf.put(word, 1.0 + Math.log10(tf.get(word)));
+		}
+	}
+	
 	/**
 	 * Returns Review in json format
 	 */
