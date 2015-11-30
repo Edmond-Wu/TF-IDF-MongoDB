@@ -53,6 +53,6 @@ public class Review {
 	 * Returns Review in json format
 	 */
 	public String toString() {
-		return "{id: " + id + ", review: " + review + ", category: " + "\"" + "}";
+		return "{id: " + id + ", review: " + review + "}";
 	}
 }

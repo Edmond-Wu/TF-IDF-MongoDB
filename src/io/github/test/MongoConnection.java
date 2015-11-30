@@ -44,6 +44,7 @@ public class MongoConnection {
 		//Picking r* from R
 		int rand2 = randInt(0, R.size() - 1);
 		Review r_star = R.get(rand2);
+		//printHashMap(r_star.getTFIDF());
 		
 		//Cosine similarity between a query of 2 random words in r* and R
 		Review query = makeQuery(r_star);
@@ -90,9 +91,9 @@ public class MongoConnection {
 	/**
 	 * Sets the TFIDF values for a review
 	 */
-	public static void updateTFIDF(Review r, HashMap<String, Double> idfs) {
+	public static void updateTFIDF(Review r, HashMap<String, Double> idf) {
 		for (String word : r.getTF().keySet()) {
-			r.getTFIDF().put(word, r.getTF().get(word) * idfs.get(word));
+			r.getTFIDF().put(word, r.getTF().get(word) * idf.get(word));
 		}
 	}
 	
@@ -108,32 +109,31 @@ public class MongoConnection {
 		}
 		
 		//Forms review with arbitrary ID number and a "review" of 2 words in the review
-		Review query = new Review("69", review_words[word_index1] + " " + review_words[word_index2]);
+		Review query = new Review("1337", review_words[word_index1] + " " + review_words[word_index2]);
 		return query;
 	}
 	
 	/**
 	 * Compares a random review to a set of reviews and calculates the cosine value
 	 */
-	public static void cosineSimilarity(Review random, ArrayList<Review> r) {
-		double cosine_value = 0.0;
-		for (Review review : r) {
+	public static void cosineSimilarity(Review random, ArrayList<Review> masterlist) {
+		double cosine_value;
+		for (Review review : masterlist) {
 			double random_total = 0.0, review_total = 0.0, rev_ran_total = 0.0;
 			
-			ArrayList<String> union = new ArrayList<String>();
+			HashSet<String> union = new HashSet<String>();
 			union.addAll(review.getTFIDF().keySet());
 			union.addAll(random.getTFIDF().keySet());
 			
 			for (String word : union) {
 				double tfidf_review = 0.0;
 				double tfidf_random = 0.0;
-				if (review.getTFIDF().containsKey(word)) {
-					tfidf_review = review.getTFIDF().get(word);
-				}
 				if (random.getTFIDF().containsKey(word)) {
 					tfidf_random = random.getTFIDF().get(word);
 				}
-				
+				if (review.getTFIDF().containsKey(word)) {
+					tfidf_review = review.getTFIDF().get(word);
+				}
 				rev_ran_total += (tfidf_review * tfidf_random);
 				random_total += Math.pow(tfidf_random, 2);
 				review_total += Math.pow(tfidf_review, 2);
