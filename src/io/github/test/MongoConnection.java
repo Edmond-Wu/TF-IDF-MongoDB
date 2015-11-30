@@ -103,8 +103,7 @@ public class MongoConnection {
 	 */
 	public static Review makeQuery(Review r) {
 		String[] review_words = r.getReview().toLowerCase().split("\\W+");
-		int word_index1 = randInt(0, review_words.length - 1);
-		int word_index2 = randInt(0, review_words.length - 1);
+		int word_index1 = randInt(0, review_words.length - 1), word_index2 = randInt(0, review_words.length - 1);
 		while (word_index1 == word_index2) {
 			word_index2 = randInt(0, review_words.length - 1);
 		}
@@ -127,8 +126,8 @@ public class MongoConnection {
 			union.addAll(random.getTFIDF().keySet());
 			
 			for (String word : union) {
-				double tfidf_review = 0.0;
-				double tfidf_random = 0.0;
+				double tfidf_review = 0.0, tfidf_random = 0.0;
+				
 				if (random.getTFIDF().containsKey(word)) {
 					tfidf_random = random.getTFIDF().get(word);
 				}
