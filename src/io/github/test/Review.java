@@ -4,11 +4,15 @@ import java.util.*;
 
 public class Review {
 	
+	//instance fields
 	private String id;
 	private String review;
 	private HashMap<String, Double> tf;
 	private HashMap<String, Double> tfidf;
 	
+	/**
+	 * Constructor
+	 */
 	public Review(String id, String review) {
 		this.id = id;
 		this.review = review;
@@ -32,6 +36,9 @@ public class Review {
 		return tfidf;
 	}
 	
+	/**
+	 * Updates a review's term-frequency values
+	 */
 	public void updateTF() {
 		String[] review_text = review.toLowerCase().split("\\W+");
 		for (int i = 0; i < review_text.length; i++) {

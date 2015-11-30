@@ -44,17 +44,18 @@ public class MongoConnection {
 		//Picking r* from R
 		int rand2 = randInt(0, R.size() - 1);
 		Review r_star = R.get(rand2);
-		//printHashMap(r_star.getTFIDF());
 		
-		//Cosine similarity between a query of 2 random words in r* and R
+		//Cosine similarity for reviews compared to a query
 		Review query = makeQuery(r_star);
 		query.updateTF();
 		updateTFIDF(query, idfs);
 		cosineSimilarity(query, R);
 		
-		//Cosine similarity between r* and the rest of R
+		System.out.println();
+		
+		//Cosine similarity for reviews compared to r*
 		R.remove(r_star);
-		cosineSimilarity(r_star, R); //comparing r* to R
+		cosineSimilarity(r_star, R);
 		
 		bc.close();
 	}
@@ -89,7 +90,7 @@ public class MongoConnection {
 	}
 	
 	/**
-	 * Sets the TFIDF values for a review
+	 * Sets the TFIDF values for a review given an idf HashMap
 	 */
 	public static void updateTFIDF(Review r, HashMap<String, Double> idf) {
 		for (String word : r.getTF().keySet()) {
@@ -98,7 +99,7 @@ public class MongoConnection {
 	}
 	
 	/**
-	 * Returns a query in the form of a review (picks 2 random words from r)
+	 * Returns a query in the form of a review (picks 2 random words from given review r)
 	 */
 	public static Review makeQuery(Review r) {
 		String[] review_words = r.getReview().toLowerCase().split("\\W+");
@@ -109,12 +110,12 @@ public class MongoConnection {
 		}
 		
 		//Forms review with arbitrary ID number and a "review" of 2 words in the review
-		Review query = new Review("1337", review_words[word_index1] + " " + review_words[word_index2]);
+		Review query = new Review("1337", "\"" + review_words[word_index1] + " " + review_words[word_index2] + "\"");
 		return query;
 	}
 	
 	/**
-	 * Compares a random review to a set of reviews and calculates the cosine value
+	 * Compares a random review to a set of reviews and calculates its cosine similarity value
 	 */
 	public static void cosineSimilarity(Review random, ArrayList<Review> masterlist) {
 		double cosine_value;
@@ -141,6 +142,8 @@ public class MongoConnection {
 			random_total = Math.sqrt(random_total);
 			review_total = Math.sqrt(review_total);
 			cosine_value = rev_ran_total / (random_total * review_total);
+			
+			//Print out relevant info
 			System.out.println(random.toString());
 			System.out.println(review.toString());
 			System.out.println("Cosine value: " + cosine_value);
