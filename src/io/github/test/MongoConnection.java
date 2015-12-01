@@ -24,9 +24,9 @@ public class MongoConnection {
 			review.updateTFs();
 			reviews.add(review);
 		}
+		updateIDFs(reviews, idfs);
 		
 		/*
-		updateIDFs(reviews, idfs);
 		for (Review r : reviews) {
 			updateTFIDF(r, idfs);
 		}
@@ -43,7 +43,7 @@ public class MongoConnection {
 				count++;
 			}
 		}
-		updateIDFs(R, idfs); //updating IDF values using R
+		
 		for (Review sample_review : R) {
 			updateTFIDFs(sample_review, idfs);
 		}
@@ -55,7 +55,7 @@ public class MongoConnection {
 		//Calculates N, number of documents that contain each word in the query
 		Review query = makeQuery(r_star);
 		HashMap<String, Integer> N = new HashMap<String, Integer>();
-		System.out.println(query.getReview());
+		System.out.println("Query: " + query.getReview());
 		String[] query_text = query.getReview().split("\\W+");
 		for (int y = 1; y < query_text.length; y++) {
 			int n = 0;
@@ -68,7 +68,7 @@ public class MongoConnection {
 			N.put(query_text[y], n);
 		}
 		for (String word : N.keySet()) {
-			System.out.println(word + ": " + N.get(word));
+			System.out.println("Number of reviews containing " + word + ": " + N.get(word));
 		}
 		System.out.println("Number of unique words in R: " + calcV(R));
 		System.out.println();
@@ -76,6 +76,12 @@ public class MongoConnection {
 		//Calculates cosine similarity for each review to Q
 		query.updateTFs();
 		updateTFIDFs(query, idfs);
+		System.out.println("TF values for query:");
+		printHashMap(query.getTF());
+		System.out.println();
+		System.out.println("TF-IDF values for query:");
+		printHashMap(query.getTFIDF());
+		System.out.println();
 		cosineSimilarity(query, R);
 		
 		System.out.println();
