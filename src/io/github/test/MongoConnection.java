@@ -180,7 +180,7 @@ public class MongoConnection {
 			//Print out relevant info
 			System.out.println(random.toString());
 			System.out.println(review.toString());
-			System.out.println("Cosine value: " + cosine_value);
+			System.out.println("Cosine value: " + cosine_value + "\n");
 		}
 	}
 	
