@@ -83,9 +83,7 @@ public class MongoConnection {
 		printHashMap(query.getTFIDF());
 		System.out.println();
 		cosineSimilarity(query, R);
-		
-		System.out.println();
-		
+				
 		//Cosine similarity for reviews compared to r*
 		/*
 		R.remove(r_star);
