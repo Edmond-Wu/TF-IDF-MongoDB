@@ -21,13 +21,16 @@ public class MongoConnection {
 		while(no_split.hasNext()){
 			DBObject no_split_dbo = no_split.next();
 			Review review = new Review((String) no_split_dbo.get("id"), (String) no_split_dbo.get("review"));
-			review.updateTF();
+			review.updateTFs();
 			reviews.add(review);
 		}
+		
+		/*
 		updateIDFs(reviews, idfs);
 		for (Review r : reviews) {
 			updateTFIDF(r, idfs);
 		}
+		*/
 		
 		//Forming R, a list of 6 random reviews and storing their TF information
 		ArrayList<Review> R = new ArrayList<Review>();
@@ -40,22 +43,48 @@ public class MongoConnection {
 				count++;
 			}
 		}
+		updateIDFs(R, idfs); //updating IDF values using R
+		for (Review sample_review : R) {
+			updateTFIDFs(sample_review, idfs);
+		}
 		
 		//Picking r* from R
 		int rand2 = randInt(0, R.size() - 1);
 		Review r_star = R.get(rand2);
 		
-		//Cosine similarity for reviews compared to a query
+		//Calculates N, number of documents that contain each word in the query
 		Review query = makeQuery(r_star);
-		query.updateTF();
-		updateTFIDF(query, idfs);
+		HashMap<String, Integer> N = new HashMap<String, Integer>();
+		System.out.println(query.getReview());
+		String[] query_text = query.getReview().split("\\W+");
+		for (int y = 1; y < query_text.length; y++) {
+			int n = 0;
+			for (Review r : R) {
+				String review_text[] = r.getReview().toLowerCase().split("\\W+");
+				if (containsQuery(review_text, query_text[y])) {
+					n++;
+				}
+			}
+			N.put(query_text[y], n);
+		}
+		for (String word : N.keySet()) {
+			System.out.println(word + ": " + N.get(word));
+		}
+		System.out.println("Number of unique words in R: " + calcV(R));
+		System.out.println();
+		
+		//Calculates cosine similarity for each review to Q
+		query.updateTFs();
+		updateTFIDFs(query, idfs);
 		cosineSimilarity(query, R);
 		
 		System.out.println();
 		
 		//Cosine similarity for reviews compared to r*
+		/*
 		R.remove(r_star);
 		cosineSimilarity(r_star, R);
+		*/
 		
 		bc.close();
 	}
@@ -73,7 +102,7 @@ public class MongoConnection {
 	public static void updateIDFs(ArrayList<Review> masterlist, HashMap<String, Double> idfs) {
 		for (Review m_review : masterlist) {
 			String[] review_words = m_review.getReview().toLowerCase().split("\\W+");
-			for (int j = 0; j < review_words.length; j++) {
+			for (int j = 1; j < review_words.length; j++) {
 				if (!idfs.containsKey(review_words[j])) {
 					idfs.put(review_words[j], 1.0);
 				}
@@ -92,7 +121,7 @@ public class MongoConnection {
 	/**
 	 * Sets the TFIDF values for a review given an idf HashMap
 	 */
-	public static void updateTFIDF(Review r, HashMap<String, Double> idf) {
+	public static void updateTFIDFs(Review r, HashMap<String, Double> idf) {
 		for (String word : r.getTF().keySet()) {
 			r.getTFIDF().put(word, r.getTF().get(word) * idf.get(word));
 		}
@@ -108,7 +137,7 @@ public class MongoConnection {
 			word_index2 = randInt(0, review_words.length - 1);
 		}
 		
-		//Forms review with arbitrary ID number and a "review" of 2 words in the review
+		//Forms review with an arbitrary ID number and a "review" of 2 words in the review
 		Review query = new Review("1337", "\"" + review_words[word_index1] + " " + review_words[word_index2] + "\"");
 		return query;
 	}
@@ -156,5 +185,36 @@ public class MongoConnection {
 		for (String word : map.keySet()) {
 			System.out.println("(" + word + ", " + map.get(word) + ")");
 		}
+	}
+	
+	/**
+	 * Checks if the array form of a review's transcript contains query
+	 * Returns true if it does, false otherwise
+	 */
+	public static boolean containsQuery(String[] text, String query) {
+		for (int i = 1; i < text.length; i++) {
+			if (text[i].equals(query)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * @param A list of reviews
+	 * @return The number of unique words found in that list of reviews
+	 */
+	public static int calcV(ArrayList<Review> reviews_list) {
+		ArrayList<String> unique_words = new ArrayList<String>();
+		for (Review r : reviews_list) {
+			String[] transcript_array = r.getReview().toLowerCase().split("\\W+");
+			for (int i = 1; i < transcript_array.length; i++) {
+				if (!unique_words.contains(transcript_array[i])) {
+					unique_words.add(transcript_array[i]);
+				}
+			}
+		}
+		
+		return unique_words.size();
 	}
 }
