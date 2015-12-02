@@ -55,6 +55,7 @@ public class MongoConnection {
 		//Calculates N, number of documents that contain each word in the query
 		Review query = makeQuery(r_star);
 		HashMap<String, Integer> N = new HashMap<String, Integer>();
+		System.out.println("Review (r*): " + r_star.getReview());
 		System.out.println("Query: " + query.getReview());
 		String[] query_text = query.getReview().split("['-]\\W+|[^\\w'-]\\W*");
 		for (int y = 1; y < query_text.length; y++) {
