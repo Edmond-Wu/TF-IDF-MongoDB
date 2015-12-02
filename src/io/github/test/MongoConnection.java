@@ -68,9 +68,9 @@ public class MongoConnection {
 			N.put(query_text[y], n);
 		}
 		for (String word : N.keySet()) {
-			System.out.println("Number of reviews containing " + word + ": " + N.get(word));
+			System.out.println("Number of reviews containing " + "\"" + word + "\"" + ": " + N.get(word));
 		}
-		System.out.println("Number of unique words in R: " + calcV(R));
+		System.out.println("Number of unique words: " + idfs.size());
 		System.out.println();
 		
 		//Calculates cosine similarity for each review to Q
@@ -202,23 +202,5 @@ public class MongoConnection {
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * @param A list of reviews
-	 * @return The number of unique words found in that list of reviews
-	 */
-	public static int calcV(ArrayList<Review> reviews_list) {
-		ArrayList<String> unique_words = new ArrayList<String>();
-		for (Review r : reviews_list) {
-			String[] transcript_array = r.getReview().toLowerCase().split("\\W+");
-			for (int i = 1; i < transcript_array.length; i++) {
-				if (!unique_words.contains(transcript_array[i])) {
-					unique_words.add(transcript_array[i]);
-				}
-			}
-		}
-		
-		return unique_words.size();
 	}
 }
