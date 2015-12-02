@@ -40,7 +40,7 @@ public class Review {
 	 * Updates a review's term-frequency values
 	 */
 	public void updateTFs() {
-		String[] review_text = review.toLowerCase().split("\\W+");
+		String[] review_text = review.toLowerCase().split("['-]\\W+|[^\\w'-]\\W*");
 		for (int i = 1; i < review_text.length; i++) {
 			if (!tf.containsKey(review_text[i])) {
 				tf.put(review_text[i], 1.0);

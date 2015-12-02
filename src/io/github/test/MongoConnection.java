@@ -56,11 +56,11 @@ public class MongoConnection {
 		Review query = makeQuery(r_star);
 		HashMap<String, Integer> N = new HashMap<String, Integer>();
 		System.out.println("Query: " + query.getReview());
-		String[] query_text = query.getReview().split("\\W+");
+		String[] query_text = query.getReview().split("['-]\\W+|[^\\w'-]\\W*");
 		for (int y = 1; y < query_text.length; y++) {
 			int n = 0;
 			for (Review r : reviews) {
-				String review_text[] = r.getReview().toLowerCase().split("\\W+");
+				String review_text[] = r.getReview().toLowerCase().split("['-]\\W+|[^\\w'-]\\W*");
 				if (containsQuery(review_text, query_text[y])) {
 					n++;
 				}
@@ -105,13 +105,17 @@ public class MongoConnection {
 	 */
 	public static void updateIDFs(ArrayList<Review> masterlist, HashMap<String, Double> idfs) {
 		for (Review m_review : masterlist) {
-			String[] review_words = m_review.getReview().toLowerCase().split("\\W+");
-			for (int j = 1; j < review_words.length; j++) {
-				if (!idfs.containsKey(review_words[j])) {
-					idfs.put(review_words[j], 1.0);
+			String[] review_words = m_review.getReview().toLowerCase().split("['-]\\W+|[^\\w'-]\\W*");
+			HashSet<String> uniques = new HashSet<String>();
+			for (int i = 1; i < review_words.length; i++) {
+				uniques.add(review_words[i]);
+			}
+			for (String word : uniques) {
+				if (!idfs.containsKey(word)) {
+					idfs.put(word, 1.0);
 				}
 				else {
-					idfs.put(review_words[j], 1.0 + idfs.get(review_words[j]));
+					idfs.put(word, 1.0 + idfs.get(word));
 				}
 			}
 		}
@@ -135,7 +139,7 @@ public class MongoConnection {
 	 * Returns a query in the form of a review (picks 2 random words from given review r)
 	 */
 	public static Review makeQuery(Review r) {
-		String[] review_words = r.getReview().toLowerCase().split("\\W+");
+		String[] review_words = r.getReview().toLowerCase().split("['-]\\W+|[^\\w'-]\\W*");
 		int word_index1 = randInt(0, review_words.length - 1), word_index2 = randInt(0, review_words.length - 1);
 		while (word_index1 == word_index2) {
 			word_index2 = randInt(0, review_words.length - 1);
