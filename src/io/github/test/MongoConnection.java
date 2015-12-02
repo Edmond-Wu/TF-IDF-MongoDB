@@ -59,7 +59,7 @@ public class MongoConnection {
 		String[] query_text = query.getReview().split("\\W+");
 		for (int y = 1; y < query_text.length; y++) {
 			int n = 0;
-			for (Review r : R) {
+			for (Review r : reviews) {
 				String review_text[] = r.getReview().toLowerCase().split("\\W+");
 				if (containsQuery(review_text, query_text[y])) {
 					n++;
